@@ -26,7 +26,7 @@ Haziran'dan Kasım'a kadar, karne gününden ilk yağmura kadar, sokağın çocu
 - **6 bölüm ve bir son söz**, her biri bir takvim yaprağıyla açılıyor
 - **5 farklı son**, seçimlerine ve kurduğun dostluklara göre
 - **Anı defteri:** Defne'nin makinesinden 27 fotoğraf, başka seçimlerde saklı olanlar da var
-- Günün saatine, mevsime ve havaya göre değişen elle çizilmiş sahneler
+- Günün saatine, mevsime ve havaya göre değişen sahneler
 - Kuş sesleri, cırcır böcekleri, yağmur; hepsi oyunun içinde üretiliyor
 - Bir oynanış yaklaşık 45 dakika, bütün sonlar için birkaç saat
 
