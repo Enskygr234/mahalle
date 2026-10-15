@@ -1,0 +1,10 @@
+{
+  "appId": "com.enskygr234.mahalle",
+  "appName": "Mahalle",
+  "webDir": "www",
+  "backgroundColor": "#14203d",
+  "android": {
+    "allowMixedContent": false,
+    "adjustMarginsForEdgeToEdge": "auto"
+  }
+}

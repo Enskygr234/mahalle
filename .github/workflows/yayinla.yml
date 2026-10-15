@@ -1,0 +1,86 @@
+# v ile başlayan bir etiket gönderilince APK ve Windows sürümünü derleyip GitHub'da yayınlar.
+name: Yayınla
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Bağımlılıklar
+        run: npm install --no-audit --no-fund
+      - name: Android projesini oluştur
+        run: |
+          npx cap add android
+          npx @capacitor/assets generate --android --iconBackgroundColor '#3f4a86' --splashBackgroundColor '#14203d'
+          npx cap sync android
+      - name: Uygulama sürümünü ayarla
+        run: |
+          SURUM="${GITHUB_REF_NAME#v}"; [ "$GITHUB_REF_TYPE" = "tag" ] || SURUM="1.0.0"
+          KOD=$(echo "$SURUM" | awk -F. '{print $1*10000+$2*100+$3}')
+          sed -i "s/versionCode 1/versionCode $KOD/; s/versionName \"1.0\"/versionName \"$SURUM\"/" android/app/build.gradle
+      - name: APK derle
+        run: cd android && ./gradlew assembleDebug --no-daemon
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk Mahalle.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: Mahalle.apk
+
+  windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bağımlılıklar
+        run: npm install --no-audit --no-fund
+      - name: Sürümü ayarla
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: npm pkg set version="${GITHUB_REF_NAME#v}"
+      - name: Windows sürümünü derle
+        run: npx electron-builder --win portable --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/Mahalle-Windows.exe
+
+  yayin:
+    name: GitHub sürümü
+    needs: [android, windows]
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Mahalle ${{ github.ref_name }}
+          body: |
+            🏘️ **Mahalle** — 1996 yazında Akasya Sokağı'nda geçen seçimli bir hikaye oyunu.
+
+            **Android:** `Mahalle.apk` dosyasını indir, telefonunda aç ve kur (bilinmeyen kaynaklara izin vermen gerekebilir).
+            **Windows:** `Mahalle-Windows.exe` dosyasını indir ve çift tıkla. Kurulum gerekmez.
+            **Tarayıcı:** https://enskygr234.github.io/mahalle/
+          files: |
+            Mahalle.apk
+            Mahalle-Windows.exe

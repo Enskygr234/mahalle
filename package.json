@@ -1,0 +1,31 @@
+{
+  "name": "mahalle",
+  "version": "1.0.0",
+  "description": "Mahalle: 1996 yazında Akasya Sokağı'nda geçen seçimli hikaye oyunu",
+  "author": "Enskygr234",
+  "license": "MIT",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "baslat": "electron .",
+    "windows": "electron-builder --win portable --publish never",
+    "android": "cap sync android"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.enskygr234.mahalle",
+    "productName": "Mahalle",
+    "copyright": "Enskygr234",
+    "files": ["electron/**", "www/**", "package.json"],
+    "directories": { "buildResources": "build", "output": "dist" },
+    "win": { "target": "portable", "icon": "build/icon.ico" },
+    "portable": { "artifactName": "Mahalle-Windows.exe" }
+  }
+}
