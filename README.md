@@ -65,7 +65,7 @@ www/
   js/ses.js   ortam sesleri ve efektler
 ```
 
-Tarayıcıda denemek için `www/index.html` dosyasını açman yeterli. `v` ile başlayan bir etiket gönderildiğinde GitHub Actions APK'yı (Capacitor) ve Windows sürümünü (Electron) derleyip sürüm olarak yayınlar.
+Tarayıcıda denemek için `www/index.html` dosyasını açman yeterli. `main` dalında oyun her değiştiğinde GitHub Actions APK'yı (Capacitor) ve Windows sürümünü (Electron) derleyip `package.json` içindeki sürüm numarasıyla yayınlar.
 
 Yazı tipleri: [Literata](https://github.com/googlefonts/literata) ve [Caveat](https://github.com/googlefonts/caveat), SIL Open Font License.
 

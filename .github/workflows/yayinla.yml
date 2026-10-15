@@ -1,9 +1,11 @@
-# v ile başlayan bir etiket gönderilince APK ve Windows sürümünü derleyip GitHub'da yayınlar.
+# Oyun değişince APK ve Windows sürümünü derleyip GitHub'da yayınlar.
+# Sürüm numarası package.json'daki "version" alanından gelir (ör. 1.0.0 → v1.0.0).
 name: Yayınla
 
 on:
   push:
-    tags: ["v*"]
+    branches: ["main"]
+    paths: ["www/**", "electron/**", "assets/**", "build/**", "package.json", "capacitor.config.json", ".github/workflows/yayinla.yml"]
   workflow_dispatch:
 
 permissions:
@@ -31,7 +33,7 @@ jobs:
           npx cap sync android
       - name: Uygulama sürümünü ayarla
         run: |
-          SURUM="${GITHUB_REF_NAME#v}"; [ "$GITHUB_REF_TYPE" = "tag" ] || SURUM="1.0.0"
+          SURUM=$(node -p "require('./package.json').version")
           KOD=$(echo "$SURUM" | awk -F. '{print $1*10000+$2*100+$3}')
           sed -i "s/versionCode 1/versionCode $KOD/; s/versionName \"1.0\"/versionName \"$SURUM\"/" android/app/build.gradle
       - name: APK derle
@@ -52,10 +54,6 @@ jobs:
           node-version: 22
       - name: Bağımlılıklar
         run: npm install --no-audit --no-fund
-      - name: Sürümü ayarla
-        if: github.ref_type == 'tag'
-        shell: bash
-        run: npm pkg set version="${GITHUB_REF_NAME#v}"
       - name: Windows sürümünü derle
         run: npx electron-builder --win portable --publish never
       - uses: actions/upload-artifact@v4
@@ -66,15 +64,20 @@ jobs:
   yayin:
     name: GitHub sürümü
     needs: [android, windows]
-    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - id: surum
+        run: echo "v=v$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v4
         with:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          name: Mahalle ${{ github.ref_name }}
+          tag_name: ${{ steps.surum.outputs.v }}
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          name: Mahalle ${{ steps.surum.outputs.v }}
           body: |
             🏘️ **Mahalle** — 1996 yazında Akasya Sokağı'nda geçen seçimli bir hikaye oyunu.
 
